@@ -31,11 +31,13 @@ def tox_get_python_executable(envconfig):
     setting.
     """
 
+
 @hookspec
 def pretest(venv):
     """ called before the runtests commands are executed
     ``venv`` is the virtualenv where the test have run
     """
+
 
 @hookspec
 def posttest(venv):

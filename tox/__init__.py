@@ -3,6 +3,7 @@ __version__ = '2.1.1'
 
 from .hookspecs import hookspec, hookimpl  # noqa
 
+
 class exception:
     class Error(Exception):
         def __str__(self):

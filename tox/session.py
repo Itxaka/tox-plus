@@ -34,13 +34,19 @@ def get_plugin_manager():
     return pm
 
 
-@hookimpl
+@hookimpl(tryfirst=True)
 def pretest(venv):
-    pass
+    action = venv.session.newaction(venv, "pre-test")
+    with action:
+        action.setactivity("pre-test", "Checking for any pre-test activity")
 
-@hookimpl
+
+@hookimpl(tryfirst=True)
 def posttest(venv):
-    pass
+    action = venv.session.newaction(venv, "post-test")
+    with action:
+        action.setactivity("post-test", "Checking for any post-test activity")
+
 
 def now():
     return py.std.time.time()
