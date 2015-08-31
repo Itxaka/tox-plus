@@ -1,0 +1,9 @@
+include CHANGELOG
+include README.rst
+include CONTRIBUTORS
+include ISSUES.txt
+include LICENSE 
+include setup.py
+include tox.ini
+graft doc
+graft tests

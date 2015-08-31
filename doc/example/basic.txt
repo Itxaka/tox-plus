@@ -1,0 +1,311 @@
+Basic usage
+=============================================
+
+a simple tox.ini / default environments
+-----------------------------------------------
+
+Put basic information about your project and the test environments you
+want your project to run in into a ``tox.ini`` file that should
+reside next to your ``setup.py`` file::
+
+    # content of: tox.ini , put in same dir as setup.py
+    [tox]
+    envlist = py26,py27
+    [testenv]
+    deps=pytest # or 'nose' or ...
+    commands=py.test  # or 'nosetests' or ...
+
+To sdist-package, install and test your project, you can
+now type at the command prompt::
+
+    tox
+
+This will sdist-package your current project, create two virtualenv_
+Environments, install the sdist-package into the environments and run
+the specified command in each of them.  With::
+
+    tox -e py26
+
+you can run restrict the test run to the python2.6 environment.
+
+Available "default" test environments names are::
+
+    py24
+    py25
+    py26
+    py27
+    py30
+    py31
+    py32
+    py33
+    py34
+    jython
+    pypy
+    pypy3
+
+However, you can also create your own test environment names,
+see some of the examples in :doc:`examples <../examples>`.
+
+specifying a platform
+-----------------------------------------------
+
+.. versionadded:: 2.0
+
+If you want to specify which platform(s) your test environment
+runs on you can set a platform regular expression like this::
+
+    platform = linux2|darwin
+
+If the expression does not match against ``sys.platform``
+the test environment will be skipped.
+
+whitelisting non-virtualenv commands
+-----------------------------------------------
+
+.. versionadded:: 1.5
+
+Sometimes you may want to use tools not contained in your
+virtualenv such as ``make``, ``bash`` or others. To avoid
+warnings you can use the ``whitelist_externals`` testenv
+configuration::
+
+    # content of tox.ini
+    [testenv]
+    whitelist_externals = make
+                          /bin/bash
+
+
+.. _virtualenv: http://pypi.python.org/pypi/virtualenv
+
+.. _multiindex:
+
+depending on requirements.txt
+-----------------------------------------------
+
+.. versionadded:: 1.6.1
+
+(experimental) If you have a ``requirements.txt`` file
+you can add it to your ``deps`` variable like this::
+
+    deps = -rrequirements.txt
+
+All installation commands are executed using ``{toxinidir}``
+(the directory where ``tox.ini`` resides) as the current
+working directory.  Therefore, the underlying ``pip`` installation
+will assume ``requirements.txt`` to exist at ``{toxinidir}/requirements.txt``.
+
+using a different default PyPI url
+-----------------------------------------------
+
+.. versionadded:: 0.9
+
+To install dependencies and packages from a different
+default PyPI server you can type interactively::
+
+    tox -i http://pypi.testrun.org
+
+This causes tox to install dependencies and the sdist install step
+to use the specificied url as the index server.
+
+You can cause the same effect by this ``tox.ini`` content::
+
+    [tox]
+    indexserver =
+        default = http://pypi.testrun.org
+
+installing dependencies from multiple PyPI servers
+---------------------------------------------------
+
+.. versionadded:: 0.9
+
+You can instrument tox to install dependencies from
+different PyPI servers, example::
+
+    [tox]
+    indexserver =
+        DEV = http://mypypiserver.org
+
+    [testenv]
+    deps =
+        docutils        # comes from standard PyPI
+        :DEV:mypackage  # will be installed from custom "DEV" pypi url
+
+This configuration will install ``docutils`` from the default
+Python PYPI server and will install the ``mypackage`` from
+our ``DEV`` indexserver, and the respective ``http://mypypiserver.org``
+url.  You can override config file settings from the command line
+like this::
+
+    tox -i DEV=http://pypi.python.org/simple  # changes :DEV: package URLs
+    tox -i http://pypi.python.org/simple      # changes default
+
+further customizing installation
+---------------------------------
+
+.. versionadded:: 1.6
+
+By default tox uses `pip`_ to install packages, both the
+package-under-test and any dependencies you specify in ``tox.ini``.
+You can fully customize tox's install-command through the
+testenv-specific :confval:`install_command=ARGV` setting.
+For instance, to use ``easy_install`` instead of `pip`_::
+
+    [testenv]
+    install_command = easy_install {opts} {packages}
+
+Or to use pip's ``--find-links`` and ``--no-index`` options to specify
+an alternative source for your dependencies::
+
+    [testenv]
+    install_command = pip install --pre --find-links http://packages.example.com --no-index {opts} {packages}
+
+.. _pip: http://pip-installer.org
+
+forcing re-creation of virtual environments
+-----------------------------------------------
+
+.. versionadded:: 0.9
+
+To force tox to recreate a (particular) virtual environment::
+
+    tox --recreate -e py27
+
+would trigger a complete reinstallation of the existing py27 environment
+(or create it afresh if it doesn't exist).
+
+passing down environment variables
+-------------------------------------------
+
+.. versionadded:: 2.0
+
+By default tox will only pass the ``PATH`` environment variable (and on
+windows ``SYSTEMROOT`` and ``PATHEXT``) from the tox invocation to the
+test environments.  If you want to pass down additional environment
+variables you can use the ``passenv`` option::
+
+    [testenv]
+    passenv = LANG
+
+When your test commands execute they will execute with
+the same LANG setting as the one with which tox was invoked.
+
+setting environment variables
+-------------------------------------------
+
+.. versionadded:: 1.0
+
+If you need to set an environment variable like ``PYTHONPATH`` you
+can use the ``setenv`` directive::
+
+    [testenv]
+    setenv =
+        PYTHONPATH = {toxinidir}/subdir
+
+When your test commands execute they will execute with
+a PYTHONPATH setting that will lead Python to also import
+from the ``subdir`` below the directory where your ``tox.ini``
+file resides.
+
+special handling of PYTHONHASHSEED
+-------------------------------------------
+
+.. versionadded:: 1.6.2
+
+By default, Tox sets PYTHONHASHSEED_ for test commands to a random integer
+generated when ``tox`` is invoked.  This mimics Python's hash randomization
+enabled by default starting `in Python 3.3`_.  To aid in reproducing test
+failures, Tox displays the value of ``PYTHONHASHSEED`` in the test output.
+
+You can tell Tox to use an explicit hash seed value via the ``--hashseed``
+command-line option to ``tox``.  You can also override the hash seed value
+per test environment in ``tox.ini`` as follows::
+
+    [testenv]
+    setenv =
+        PYTHONHASHSEED = 100
+
+If you wish to disable this feature, you can pass the command line option
+``--hashseed=noset`` when ``tox`` is invoked. You can also disable it from the
+``tox.ini`` by setting ``PYTHONHASHSEED = 0`` as described above.
+
+.. _`in Python 3.3`: http://docs.python.org/3/whatsnew/3.3.html#builtin-functions-and-types
+.. _PYTHONHASHSEED: http://docs.python.org/using/cmdline.html#envvar-PYTHONHASHSEED
+
+Integration with setuptools/distribute test commands
+----------------------------------------------------
+
+Distribute/Setuptools support test requirements
+and you can extend its test command to trigger
+a test run when ``python setup.py test`` is issued::
+
+    from setuptools.command.test import test as TestCommand
+    import sys
+
+    class Tox(TestCommand):
+        user_options = [('tox-args=', 'a', "Arguments to pass to tox")]
+        def initialize_options(self):
+            TestCommand.initialize_options(self)
+            self.tox_args = None
+        def finalize_options(self):
+            TestCommand.finalize_options(self)
+            self.test_args = []
+            self.test_suite = True
+        def run_tests(self):
+            #import here, cause outside the eggs aren't loaded
+            import tox
+            import shlex
+            args = self.tox_args
+            if args:
+                args = shlex.split(self.tox_args)
+            errno = tox.cmdline(args=args)
+            sys.exit(errno)
+
+    setup(
+        #...,
+        tests_require=['tox'],
+        cmdclass = {'test': Tox},
+        )
+
+Now if you run::
+
+    python setup.py test
+
+this will install tox and then run tox. You can pass arguments to ``tox``
+using the ``--tox-args`` or ``-a`` command-line options. For example::
+
+    python setup.py test -a "-epy27"
+
+is equivalent to running ``tox -epy27``.
+
+Ignoring a command exit code
+----------------------------
+
+In some cases, you may want to ignore a command exit code. For example::
+
+    [testenv:py27]
+    commands = coverage erase
+           {envbindir}/python setup.py develop
+           coverage run -p setup.py test
+           coverage combine
+           - coverage html
+           {envbindir}/flake8 loads
+
+By using the ``-`` prefix, similar to a ``make`` recipe line, you can ignore
+the exit code for that command.
+
+Compressing dependency matrix
+-----------------------------
+
+If you have a large matrix of dependencies, python versions and/or environments you can
+use :ref:`generative-envlist` and :ref:`conditional settings <factors>` to express that in a concise form::
+
+    [tox]
+    envlist = py{26,27,33}-django{15,16}-{sqlite,mysql}
+
+    [testenv]
+    deps =
+        django15: Django>=1.5,<1.6
+        django16: Django>=1.6,<1.7
+        py33-mysql: PyMySQL     ; use if both py33 and mysql are in an env name
+        py26,py27: urllib3      ; use if any of py26 or py27 are in an env name
+        py{26,27}-sqlite: mock  ; mocking sqlite in python 2.x

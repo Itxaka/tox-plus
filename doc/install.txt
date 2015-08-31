@@ -1,0 +1,44 @@
+tox installation
+==================================
+
+Install info in a nutshell
+----------------------------------
+
+**Pythons**: CPython 2.6-3.3, Jython-2.5.1, pypy-1.9ff
+
+**Operating systems**: Linux, Windows, OSX, Unix
+
+**Installer Requirements**: setuptools_
+
+**License**: MIT license
+
+**hg repository**: https://bitbucket.org/hpk42/tox
+
+Installation with pip/easy_install
+--------------------------------------
+
+Use one of the following commands::
+
+   pip install tox
+   easy_install tox
+
+It is fine to install ``tox`` itself into a virtualenv_ environment.
+
+Install from Checkout
+-------------------------
+
+Consult the Bitbucket page to get a checkout of the mercurial repository:
+
+    https://bitbucket.org/hpk42/tox
+
+and then install in your environment with something like::
+
+    python setup.py install
+
+or just activate your checkout in your environment like this::
+
+    python setup.py develop
+
+so that you can do changes and submit patches.
+
+.. include:: links.txt
