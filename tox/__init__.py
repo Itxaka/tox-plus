@@ -2,7 +2,8 @@
 __version__ = '2.1.1'
 
 from .hookspecs import hookspec, hookimpl  # noqa
-
+import pluggy
+import tox
 
 class exception:
     class Error(Exception):
