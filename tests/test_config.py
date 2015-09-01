@@ -3,10 +3,10 @@ from textwrap import dedent
 
 import py
 import pytest
-import tox
-import tox.config
-from tox.config import *  # noqa
-from tox.venv import VirtualEnv
+import tox_plus
+import tox_plus.config
+from tox_plus.config import *  # noqa
+from tox_plus.venv import VirtualEnv
 
 
 class TestVenvConfig:
@@ -297,7 +297,7 @@ class TestIniParser:
         """)
         reader = SectionReader("mydefault", config._cfg, fallbacksections=['mydefault'])
         assert reader is not None
-        with py.test.raises(tox.exception.ConfigError):
+        with py.test.raises(tox_plus.exception.ConfigError):
             reader.getstring("key2")
 
     def test_getstring_fallback_sections(self, tmpdir, newconfig):
@@ -371,7 +371,7 @@ class TestIniParser:
         reader = SectionReader("section", config._cfg)
         x = reader.getstring("key1")
         assert x == "hello"
-        with py.test.raises(tox.exception.ConfigError):
+        with py.test.raises(tox_plus.exception.ConfigError):
             reader.getstring("key2")
 
     def test_getstring_environment_substitution_with_default(self, monkeypatch, newconfig):
@@ -584,7 +584,7 @@ class TestIniParser:
         assert reader.getbool("key2") is False
         assert reader.getbool("key2a") is False
         py.test.raises(KeyError, 'reader.getbool("key3")')
-        py.test.raises(tox.exception.ConfigError, 'reader.getbool("key5")')
+        py.test.raises(tox_plus.exception.ConfigError, 'reader.getbool("key5")')
 
 
 class TestConfigTestEnv:
@@ -847,7 +847,7 @@ class TestConfigTestEnv:
             'some_install', '{packages}']
 
     def test_install_command_must_contain_packages(self, newconfig):
-        py.test.raises(tox.exception.ConfigError, newconfig, """
+        py.test.raises(tox_plus.exception.ConfigError, newconfig, """
             [testenv]
             install_command=pip install
         """)
@@ -918,7 +918,7 @@ class TestConfigTestEnv:
         assert "py27" in config.envconfigs
 
     def test_substitution_error(tmpdir, newconfig):
-        py.test.raises(tox.exception.ConfigError, newconfig, """
+        py.test.raises(tox_plus.exception.ConfigError, newconfig, """
             [testenv:py27]
             basepython={xyz}
         """)
@@ -1424,12 +1424,12 @@ class TestHashseedOption:
             """
         if make_hashseed is None:
             make_hashseed = lambda: '123456789'
-        original_make_hashseed = tox.config.make_hashseed
-        tox.config.make_hashseed = make_hashseed
+        original_make_hashseed = tox_plus.config.make_hashseed
+        tox_plus.config.make_hashseed = make_hashseed
         try:
             config = newconfig(args, tox_ini)
         finally:
-            tox.config.make_hashseed = original_make_hashseed
+            tox_plus.config.make_hashseed = original_make_hashseed
         return config.envconfigs
 
     def _get_envconfig(self, newconfig, args=None, tox_ini=None):
@@ -1600,17 +1600,17 @@ class TestParseEnv:
 
 class TestCmdInvocation:
     def test_help(self, cmd):
-        result = cmd.run("tox", "-h")
+        result = cmd.run("tox-plus", "-h")
         assert not result.ret
         result.stdout.fnmatch_lines([
             "*help*",
         ])
 
     def test_version(self, cmd):
-        result = cmd.run("tox", "--version")
+        result = cmd.run("tox-plus", "--version")
         assert not result.ret
         stdout = result.stdout.str()
-        assert tox.__version__ in stdout
+        assert tox_plus.__version__ in stdout
         assert "imported from" in stdout
 
     def test_listenvs(self, cmd, initproj):
@@ -1626,7 +1626,7 @@ class TestCmdInvocation:
             changedir = docs
             ''',
         })
-        result = cmd.run("tox", "-l")
+        result = cmd.run("tox-plus", "-l")
         result.stdout.fnmatch_lines("""
             *py26*
             *py27*
@@ -1637,7 +1637,7 @@ class TestCmdInvocation:
 
     def test_config_specific_ini(self, tmpdir, cmd):
         ini = tmpdir.ensure("hello.ini")
-        result = cmd.run("tox", "-c", ini, "--showconfig")
+        result = cmd.run("tox-plus", "-c", ini, "--showconfig")
         assert not result.ret
         result.stdout.fnmatch_lines([
             "*config-file*hello.ini*",
@@ -1645,7 +1645,7 @@ class TestCmdInvocation:
 
     def test_no_tox_ini(self, cmd, initproj):
         initproj("noini-0.5", )
-        result = cmd.run("tox")
+        result = cmd.run("tox-plus")
         assert result.ret
         result.stderr.fnmatch_lines([
             "*ERROR*tox.ini*not*found*",
@@ -1662,13 +1662,13 @@ class TestCmdInvocation:
                 dep2
             ''',
         })
-        result = cmd.run("tox", "--showconfig")
+        result = cmd.run("tox-plus", "--showconfig")
         assert result.ret == 0
         result.stdout.fnmatch_lines([
             r'*deps*dep1==2.3, dep2*',
         ])
         # override dep1 specific version, and force version for dep2
-        result = cmd.run("tox", "--showconfig", "--force-dep=dep1",
+        result = cmd.run("tox-plus", "--showconfig", "--force-dep=dep1",
                          "--force-dep=dep2==5.0")
         assert result.ret == 0
         result.stdout.fnmatch_lines([

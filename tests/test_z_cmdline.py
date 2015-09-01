@@ -1,7 +1,7 @@
-import tox
+import tox_plus
 import py
 import pytest
-from tox._pytestplugin import ReportExpectMock
+from tox_plus._pytestplugin import ReportExpectMock
 try:
     import json
 except ImportError:
@@ -9,8 +9,8 @@ except ImportError:
 
 pytest_plugins = "pytester"
 
-from tox.session import Session
-from tox.config import parseconfig
+from tox_plus.session import Session
+from tox_plus.config import parseconfig
 
 
 def test_report_protocol(newconfig):
@@ -41,10 +41,10 @@ def test_report_protocol(newconfig):
 def test__resolve_pkg(tmpdir, mocksession):
     distshare = tmpdir.join("distshare")
     spec = distshare.join("pkg123-*")
-    py.test.raises(tox.exception.MissingDirectory,
+    py.test.raises(tox_plus.exception.MissingDirectory,
                    'mocksession._resolve_pkg(spec)')
     distshare.ensure(dir=1)
-    py.test.raises(tox.exception.MissingDependency,
+    py.test.raises(tox_plus.exception.MissingDependency,
                    'mocksession._resolve_pkg(spec)')
     distshare.ensure("pkg123-1.3.5.zip")
     p = distshare.ensure("pkg123-1.4.5.zip")
@@ -176,7 +176,7 @@ def XXX_test_package(cmd, initproj):
             """,
         'tox.ini': ''
     })
-    result = cmd.run("tox", "package")
+    result = cmd.run("tox-plus", "package")
     assert not result.ret
     result.stdout.fnmatch_lines([
         "*created sdist package at*",
@@ -191,7 +191,7 @@ def test_minversion(cmd, initproj):
             minversion = 6.0
         '''
     })
-    result = cmd.run("tox", "-v")
+    result = cmd.run("tox-plus", "-v")
     result.stdout.fnmatch_lines([
         "*ERROR*tox version is * required is at least 6.0*"
     ])
@@ -205,7 +205,7 @@ def test_run_custom_install_command_error(cmd, initproj):
             install_command=./tox.ini {opts} {packages}
         '''
     })
-    result = cmd.run("tox")
+    result = cmd.run("tox-plus")
     result.stdout.fnmatch_lines([
         "ERROR: invocation failed (errno *), args: ['*/tox.ini*",
     ])
@@ -222,13 +222,13 @@ def test_unknown_interpreter_and_env(cmd, initproj):
             changedir=tests
         '''
     })
-    result = cmd.run("tox")
+    result = cmd.run("tox-plus")
     assert result.ret
     result.stdout.fnmatch_lines([
         "*ERROR*InterpreterNotFound*xyz_unknown_interpreter*",
     ])
 
-    result = cmd.run("tox", "-exyz")
+    result = cmd.run("tox-plus", "-exyz")
     assert result.ret
     result.stdout.fnmatch_lines([
         "*ERROR*unknown*",
@@ -245,7 +245,7 @@ def test_unknown_interpreter(cmd, initproj):
             changedir=tests
         '''
     })
-    result = cmd.run("tox")
+    result = cmd.run("tox-plus")
     assert result.ret
     result.stdout.fnmatch_lines([
         "*ERROR*InterpreterNotFound*xyz_unknown_interpreter*",
@@ -261,7 +261,7 @@ def test_skip_platform_mismatch(cmd, initproj):
             platform=x123
         '''
     })
-    result = cmd.run("tox")
+    result = cmd.run("tox-plus")
     assert not result.ret
     result.stdout.fnmatch_lines("""
         SKIPPED*platform mismatch*
@@ -278,7 +278,7 @@ def test_skip_unknown_interpreter(cmd, initproj):
             changedir=tests
         '''
     })
-    result = cmd.run("tox", "--skip-missing-interpreters")
+    result = cmd.run("tox-plus", "--skip-missing-interpreters")
     assert not result.ret
     result.stdout.fnmatch_lines([
         "*SKIPPED*InterpreterNotFound*xyz_unknown_interpreter*",
@@ -294,7 +294,7 @@ def test_unknown_dep(cmd, initproj):
             changedir=tests
         '''
     })
-    result = cmd.run("tox", )
+    result = cmd.run("tox-plus", )
     assert result.ret
     result.stdout.fnmatch_lines([
         "*ERROR*could not install*qweqwe123*",
@@ -305,7 +305,7 @@ def test_unknown_environment(cmd, initproj):
     initproj("env123-0.7", filedefs={
         'tox.ini': ''
     })
-    result = cmd.run("tox", "-e", "qpwoei")
+    result = cmd.run("tox-plus", "-e", "qpwoei")
     assert result.ret
     result.stdout.fnmatch_lines([
         "*ERROR*unknown*environment*qpwoei*",
@@ -325,7 +325,7 @@ def test_skip_sdist(cmd, initproj):
             commands=python -c "print('done')"
         '''
     })
-    result = cmd.run("tox", )
+    result = cmd.run("tox-plus", )
     assert result.ret == 0
 
 
@@ -337,7 +337,7 @@ def test_minimal_setup_py_empty(cmd, initproj):
         'tox.ini': ''
 
     })
-    result = cmd.run("tox", )
+    result = cmd.run("tox-plus", )
     assert result.ret == 1
     result.stdout.fnmatch_lines([
         "*ERROR*empty*",
@@ -353,7 +353,7 @@ def test_minimal_setup_py_comment_only(cmd, initproj):
         'tox.ini': ''
 
     })
-    result = cmd.run("tox", )
+    result = cmd.run("tox-plus", )
     assert result.ret == 1
     result.stdout.fnmatch_lines([
         "*ERROR*empty*",
@@ -370,7 +370,7 @@ def test_minimal_setup_py_non_functional(cmd, initproj):
         'tox.ini': ''
 
     })
-    result = cmd.run("tox", )
+    result = cmd.run("tox-plus", )
     assert result.ret == 1
     result.stdout.fnmatch_lines([
         "*ERROR*check setup.py*",
@@ -385,7 +385,7 @@ def test_sdist_fails(cmd, initproj):
         """,
         'tox.ini': '',
     })
-    result = cmd.run("tox", )
+    result = cmd.run("tox-plus", )
     assert result.ret
     result.stdout.fnmatch_lines([
         "*FAIL*could not package project*",
@@ -409,7 +409,7 @@ def test_package_install_fails(cmd, initproj):
             """,
         'tox.ini': '',
     })
-    result = cmd.run("tox", )
+    result = cmd.run("tox-plus", )
     assert result.ret
     result.stdout.fnmatch_lines([
         "*InvocationError*",
@@ -436,13 +436,13 @@ class TestToxRun:
         })
 
     def test_toxuone_env(self, cmd, example123):
-        result = cmd.run("tox")
+        result = cmd.run("tox-plus")
         assert not result.ret
         result.stdout.fnmatch_lines([
             "*junit-python.xml*",
             "*1 passed*",
         ])
-        result = cmd.run("tox", "-epython", )
+        result = cmd.run("tox-plus", "-epython", )
         assert not result.ret
         result.stdout.fnmatch_lines([
             "*1 passed*",
@@ -453,7 +453,7 @@ class TestToxRun:
     def test_different_config_cwd(self, cmd, example123, monkeypatch):
         # see that things work with a different CWD
         monkeypatch.chdir(cmd.tmpdir)
-        result = cmd.run("tox", "-c", "example123/tox.ini")
+        result = cmd.run("tox-plus", "-c", "example123/tox.ini")
         assert not result.ret
         result.stdout.fnmatch_lines([
             "*1 passed*",
@@ -467,7 +467,7 @@ class TestToxRun:
         assert testfile.check()
         testfile.write("def test_fail(): assert 0")
         jsonpath = cmd.tmpdir.join("res.json")
-        result = cmd.run("tox", "--result-json", jsonpath)
+        result = cmd.run("tox-plus", "--result-json", jsonpath)
         assert result.ret == 1
         data = json.load(jsonpath.open("r"))
         verify_json_report_format(data)
@@ -481,7 +481,7 @@ class TestToxRun:
 def test_develop(initproj, cmd):
     initproj("example123", filedefs={'tox.ini': """
     """})
-    result = cmd.run("tox", "-vv", "--develop")
+    result = cmd.run("tox-plus", "-vv", "--develop")
     assert not result.ret
     assert "sdist-make" not in result.stdout.str()
 
@@ -491,7 +491,7 @@ def test_usedevelop(initproj, cmd):
             [testenv]
             usedevelop=True
     """})
-    result = cmd.run("tox", "-vv")
+    result = cmd.run("tox-plus", "-vv")
     assert not result.ret
     assert "sdist-make" not in result.stdout.str()
 
@@ -505,12 +505,12 @@ def test_usedevelop_mixed(initproj, cmd):
     """})
 
     # running only 'devenv' should not do sdist
-    result = cmd.run("tox", "-vv", "-e", "devenv")
+    result = cmd.run("tox-plus", "-vv", "-e", "devenv")
     assert not result.ret
     assert "sdist-make" not in result.stdout.str()
 
     # running all envs should do sdist
-    result = cmd.run("tox", "-vv")
+    result = cmd.run("tox-plus", "-vv")
     assert not result.ret
     assert "sdist-make" in result.stdout.str()
 
@@ -532,14 +532,14 @@ def test_test_usedevelop(cmd, initproj):
             deps=pytest
         '''
     })
-    result = cmd.run("tox", "-v")
+    result = cmd.run("tox-plus", "-v")
     assert not result.ret
     result.stdout.fnmatch_lines([
         "*junit-python.xml*",
         "*1 passed*",
     ])
     assert "sdist-make" not in result.stdout.str()
-    result = cmd.run("tox", "-epython", )
+    result = cmd.run("tox-plus", "-epython", )
     assert not result.ret
     result.stdout.fnmatch_lines([
         "*1 passed*",
@@ -548,7 +548,7 @@ def test_test_usedevelop(cmd, initproj):
     ])
     # see that things work with a different CWD
     old = cmd.tmpdir.chdir()
-    result = cmd.run("tox", "-c", "example123/tox.ini")
+    result = cmd.run("tox-plus", "-c", "example123/tox.ini")
     assert not result.ret
     result.stdout.fnmatch_lines([
         "*1 passed*",
@@ -560,7 +560,7 @@ def test_test_usedevelop(cmd, initproj):
     testfile = py.path.local("tests").join("test_hello.py")
     assert testfile.check()
     testfile.write("def test_fail(): assert 0")
-    result = cmd.run("tox", )
+    result = cmd.run("tox-plus", )
     assert result.ret
     result.stdout.fnmatch_lines([
         "*1 failed*",
@@ -579,7 +579,7 @@ def test_test_piphelp(initproj, cmd):
         [testenv:py27]
         basepython=python
     """})
-    result = cmd.run("tox")
+    result = cmd.run("tox-plus")
     assert not result.ret
 
 
@@ -589,13 +589,13 @@ def test_notest(initproj, cmd):
         [testenv:py26]
         basepython=python
     """})
-    result = cmd.run("tox", "-v", "--notest")
+    result = cmd.run("tox-plus", "-v", "--notest")
     assert not result.ret
     result.stdout.fnmatch_lines([
         "*summary*",
         "*py26*skipped tests*",
     ])
-    result = cmd.run("tox", "-v", "--notest", "-epy26")
+    result = cmd.run("tox-plus", "-v", "--notest", "-epy26")
     assert not result.ret
     result.stdout.fnmatch_lines([
         "*py26*reusing*",
@@ -605,7 +605,7 @@ def test_notest(initproj, cmd):
 def test_PYC(initproj, cmd, monkeypatch):
     initproj("example123", filedefs={'tox.ini': ''})
     monkeypatch.setenv("PYTHONDOWNWRITEBYTECODE", 1)
-    result = cmd.run("tox", "-v", "--notest")
+    result = cmd.run("tox-plus", "-v", "--notest")
     assert not result.ret
     result.stdout.fnmatch_lines([
         "*create*",
@@ -615,7 +615,7 @@ def test_PYC(initproj, cmd, monkeypatch):
 def test_env_VIRTUALENV_PYTHON(initproj, cmd, monkeypatch):
     initproj("example123", filedefs={'tox.ini': ''})
     monkeypatch.setenv("VIRTUALENV_PYTHON", '/FOO')
-    result = cmd.run("tox", "-v", "--notest")
+    result = cmd.run("tox-plus", "-v", "--notest")
     assert not result.ret, result.stdout.lines
     result.stdout.fnmatch_lines([
         "*create*",
@@ -625,7 +625,7 @@ def test_env_VIRTUALENV_PYTHON(initproj, cmd, monkeypatch):
 def test_sdistonly(initproj, cmd):
     initproj("example123", filedefs={'tox.ini': """
     """})
-    result = cmd.run("tox", "-v", "--sdistonly")
+    result = cmd.run("tox-plus", "-v", "--sdistonly")
     assert not result.ret
     result.stdout.fnmatch_lines([
         "*sdist-make*setup.py*",
@@ -641,7 +641,7 @@ def test_separate_sdist_no_sdistfile(cmd, initproj):
             distshare=%s
         """ % distshare
     })
-    result = cmd.run("tox", "--sdistonly")
+    result = cmd.run("tox-plus", "--sdistonly")
     assert not result.ret
     l = distshare.listdir()
     assert len(l) == 1
@@ -658,12 +658,12 @@ def test_separate_sdist(cmd, initproj):
             sdistsrc={distshare}/pkg123-0.7.zip
         """ % distshare
     })
-    result = cmd.run("tox", "--sdistonly")
+    result = cmd.run("tox-plus", "--sdistonly")
     assert not result.ret
     l = distshare.listdir()
     assert len(l) == 1
     sdistfile = l[0]
-    result = cmd.run("tox", "-v", "--notest")
+    result = cmd.run("tox-plus", "-v", "--notest")
     assert not result.ret
     result.stdout.fnmatch_lines([
         "*inst*%s*" % sdistfile,
@@ -701,7 +701,7 @@ def test_envsitepackagesdir(cmd, initproj):
         commands=
             python -c "print(r'X:{envsitepackagesdir}')"
     """})
-    result = cmd.run("tox")
+    result = cmd.run("tox-plus")
     assert result.ret == 0
     result.stdout.fnmatch_lines("""
         X:*tox*site-packages*
@@ -710,7 +710,7 @@ def test_envsitepackagesdir(cmd, initproj):
 
 def verify_json_report_format(data, testenvs=True):
     assert data["reportversion"] == "1"
-    assert data["toxversion"] == tox.__version__
+    assert data["toxversion"] == tox_plus.__version__
     if testenvs:
         for envname, envdata in data["testenvs"].items():
             for commandtype in ("setup", "test"):

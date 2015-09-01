@@ -1,11 +1,11 @@
 import py
-import tox
+import tox_plus
 import pytest
 import os
 import sys
-import tox.config
-from tox.venv import *  # noqa
-from tox.interpreters import NoInterpreterInfo
+import tox_plus.config
+from tox_plus.venv import *  # noqa
+from tox_plus.interpreters import NoInterpreterInfo
 
 # def test_global_virtualenv(capfd):
 #    v = VirtualEnv()
@@ -32,19 +32,19 @@ def test_getsupportedinterpreter(monkeypatch, newconfig, mocksession):
     assert py.path.local(interp).realpath() == py.path.local(sys.executable).realpath()
     monkeypatch.setattr(sys, 'platform', "win32")
     monkeypatch.setattr(venv.envconfig, 'basepython', 'jython')
-    py.test.raises(tox.exception.UnsupportedInterpreter,
+    py.test.raises(tox_plus.exception.UnsupportedInterpreter,
                    venv.getsupportedinterpreter)
     monkeypatch.undo()
     monkeypatch.setattr(venv.envconfig, "envname", "py1")
     monkeypatch.setattr(venv.envconfig, 'basepython', 'notexistingpython')
-    py.test.raises(tox.exception.InterpreterNotFound,
+    py.test.raises(tox_plus.exception.InterpreterNotFound,
                    venv.getsupportedinterpreter)
     monkeypatch.undo()
     # check that we properly report when no version_info is present
     info = NoInterpreterInfo(name=venv.name)
     info.executable = "something"
     monkeypatch.setattr(config.interpreters, "get_info", lambda *args, **kw: info)
-    pytest.raises(tox.exception.InvocationError, venv.getsupportedinterpreter)
+    pytest.raises(tox_plus.exception.InvocationError, venv.getsupportedinterpreter)
 
 
 def test_create(monkeypatch, mocksession, newconfig):
@@ -253,14 +253,14 @@ def test_install_recreate(newmocksession, tmpdir):
 
 
 def test_test_hashseed_is_in_output(newmocksession):
-    original_make_hashseed = tox.config.make_hashseed
-    tox.config.make_hashseed = lambda: '123456789'
+    original_make_hashseed = tox_plus.config.make_hashseed
+    tox_plus.config.make_hashseed = lambda: '123456789'
     try:
         mocksession = newmocksession([], '''
             [testenv]
         ''')
     finally:
-        tox.config.make_hashseed = original_make_hashseed
+        tox_plus.config.make_hashseed = original_make_hashseed
     venv = mocksession.getenv('python')
     venv.update()
     venv.test()

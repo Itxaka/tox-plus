@@ -1,6 +1,6 @@
 import sys
 import py
-from tox import __version__ as toxver
+from tox_plus import __version__ as toxver
 import json
 
 

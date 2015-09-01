@@ -1,2 +1,2 @@
 
-from tox._pytestplugin import *  # noqa
+from tox_plus._pytestplugin import *  # noqa

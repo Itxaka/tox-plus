@@ -1,4 +1,16 @@
 
+What is Tox-plus?
+--------------------
+Tox-plus is a fork of tox done in order to add more features to it.
+[![Build Status](https://travis-ci.org/Itxaka/tox-plus.svg?branch=master)](https://travis-ci.org/Itxaka/tox-plus)
+
+
+Differences
+-------------
+
+ - The ``{env:key:default}`` substitution for commands now works
+ - Added 2 extra hooks for plugins, ``pretest`` and ``posttest`` executed before and after the tests are run, for easy and useful plugin development
+
 What is Tox?
 --------------------
 

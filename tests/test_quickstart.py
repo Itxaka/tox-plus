@@ -1,5 +1,5 @@
 import pytest
-import tox._quickstart
+import tox_plus._quickstart
 
 
 @pytest.fixture(autouse=True)
@@ -28,7 +28,7 @@ class TestToxQuickstartMain(object):
             self,
             monkeypatch):
         monkeypatch.setattr(
-            tox._quickstart, 'term_input',
+            tox_plus._quickstart, 'term_input',
             self.get_mock_term_input(
                 [
                     '4',         # Python versions: choose one by one
@@ -46,7 +46,7 @@ class TestToxQuickstartMain(object):
             )
         )
 
-        tox._quickstart.main(argv=['tox-quickstart'])
+        tox_plus._quickstart.main(argv=['tox-quickstart'])
 
         expected_tox_ini = """
 # Tox (http://tox.testrun.org/) is a tool for running tests
@@ -69,7 +69,7 @@ deps =
             self,
             monkeypatch):
         monkeypatch.setattr(
-            tox._quickstart, 'term_input',
+            tox_plus._quickstart, 'term_input',
             self.get_mock_term_input(
                 [
                     '4',          # Python versions: choose one by one
@@ -87,7 +87,7 @@ deps =
             )
         )
 
-        tox._quickstart.main(argv=['tox-quickstart'])
+        tox_plus._quickstart.main(argv=['tox-quickstart'])
 
         expected_tox_ini = """
 # Tox (http://tox.testrun.org/) is a tool for running tests
@@ -110,7 +110,7 @@ deps =
             self,
             monkeypatch):
         monkeypatch.setattr(
-            tox._quickstart, 'term_input',
+            tox_plus._quickstart, 'term_input',
             self.get_mock_term_input(
                 [
                     '4',          # Python versions: choose one by one
@@ -128,7 +128,7 @@ deps =
             )
         )
 
-        tox._quickstart.main(argv=['tox-quickstart'])
+        tox_plus._quickstart.main(argv=['tox-quickstart'])
 
         expected_tox_ini = """
 # Tox (http://tox.testrun.org/) is a tool for running tests
@@ -151,7 +151,7 @@ deps =
             self,
             monkeypatch):
         monkeypatch.setattr(
-            tox._quickstart, 'term_input',
+            tox_plus._quickstart, 'term_input',
             self.get_mock_term_input(
                 [
                     '4',          # Python versions: choose one by one
@@ -168,7 +168,7 @@ deps =
                 ]
             )
         )
-        tox._quickstart.main(argv=['tox-quickstart'])
+        tox_plus._quickstart.main(argv=['tox-quickstart'])
 
         expected_tox_ini = """
 # Tox (http://tox.testrun.org/) is a tool for running tests
@@ -191,7 +191,7 @@ deps =
             self,
             monkeypatch):
         monkeypatch.setattr(
-            tox._quickstart, 'term_input',
+            tox_plus._quickstart, 'term_input',
             self.get_mock_term_input(
                 [
                     '1',          # py27
@@ -201,7 +201,7 @@ deps =
             )
         )
 
-        tox._quickstart.main(argv=['tox-quickstart'])
+        tox_plus._quickstart.main(argv=['tox-quickstart'])
 
         expected_tox_ini = """
 # Tox (http://tox.testrun.org/) is a tool for running tests
@@ -224,7 +224,7 @@ deps =
             self,
             monkeypatch):
         monkeypatch.setattr(
-            tox._quickstart, 'term_input',
+            tox_plus._quickstart, 'term_input',
             self.get_mock_term_input(
                 [
                     '2',          # py27 and py33
@@ -234,7 +234,7 @@ deps =
             )
         )
 
-        tox._quickstart.main(argv=['tox-quickstart'])
+        tox_plus._quickstart.main(argv=['tox-quickstart'])
 
         expected_tox_ini = """
 # Tox (http://tox.testrun.org/) is a tool for running tests
@@ -257,7 +257,7 @@ deps =
             self,
             monkeypatch):
         monkeypatch.setattr(
-            tox._quickstart, 'term_input',
+            tox_plus._quickstart, 'term_input',
             self.get_mock_term_input(
                 [
                     '3',          # all Python versions
@@ -267,7 +267,7 @@ deps =
             )
         )
 
-        tox._quickstart.main(argv=['tox-quickstart'])
+        tox_plus._quickstart.main(argv=['tox-quickstart'])
 
         expected_tox_ini = """
 # Tox (http://tox.testrun.org/) is a tool for running tests
@@ -290,7 +290,7 @@ deps =
             self,
             monkeypatch):
         monkeypatch.setattr(
-            tox._quickstart, 'term_input',
+            tox_plus._quickstart, 'term_input',
             self.get_mock_term_input(
                 [
                     '4',  # Python versions: choose one by one
@@ -308,7 +308,7 @@ deps =
             )
         )
 
-        tox._quickstart.main(argv=['tox-quickstart'])
+        tox_plus._quickstart.main(argv=['tox-quickstart'])
 
         expected_tox_ini = """
 # Tox (http://tox.testrun.org/) is a tool for running tests
@@ -335,7 +335,7 @@ deps =
             f.close()
 
         monkeypatch.setattr(
-            tox._quickstart, 'term_input',
+            tox_plus._quickstart, 'term_input',
             self.get_mock_term_input(
                 [
                     '4',  # Python versions: choose one by one
@@ -354,7 +354,7 @@ deps =
             )
         )
 
-        tox._quickstart.main(argv=['tox-quickstart'])
+        tox_plus._quickstart.main(argv=['tox-quickstart'])
 
         expected_tox_ini = """
 # Tox (http://tox.testrun.org/) is a tool for running tests
@@ -400,8 +400,8 @@ commands = py.test
 deps =
     pytest
 """.lstrip()
-        d = tox._quickstart.process_input(d)
-        tox._quickstart.generate(d)
+        d = tox_plus._quickstart.process_input(d)
+        tox_plus._quickstart.generate(d)
         result = open('tox.ini').read()
         # print(result)
         assert(result == expected_tox_ini)
@@ -427,8 +427,8 @@ commands = python setup.py test
 deps =
 
 """.lstrip()
-        d = tox._quickstart.process_input(d)
-        tox._quickstart.generate(d)
+        d = tox_plus._quickstart.process_input(d)
+        tox_plus._quickstart.generate(d)
         result = open('tox.ini').read()
         # print(result)
         assert(result == expected_tox_ini)
@@ -453,8 +453,8 @@ commands = trial
 deps =
     Twisted
 """.lstrip()
-        d = tox._quickstart.process_input(d)
-        tox._quickstart.generate(d)
+        d = tox_plus._quickstart.process_input(d)
+        tox_plus._quickstart.generate(d)
         result = open('tox.ini').read()
         # print(result)
         assert(result == expected_tox_ini)
@@ -484,8 +484,8 @@ commands = nosetests -v
 deps =
     nose
 """.lstrip()
-        d = tox._quickstart.process_input(d)
-        tox._quickstart.generate(d)
+        d = tox_plus._quickstart.process_input(d)
+        tox_plus._quickstart.generate(d)
         result = open('tox.ini').read()
         # print(result)
         assert(result == expected_tox_ini)

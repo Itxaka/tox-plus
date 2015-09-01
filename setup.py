@@ -44,20 +44,20 @@ def main():
         if version < (2, 7):
             install_requires += ['argparse']
     setuptools.setup(
-        name='tox',
+        name='tox-plus',
         description='virtualenv-based automation of test activities',
         long_description=open("README.rst").read(),
-        url='http://tox.testrun.org/',
-        version='2.1.1',
+        url='https://github.com/Itxaka/tox-plus',
+        version='0.0.1',
         license='http://opensource.org/licenses/MIT',
         platforms=['unix', 'linux', 'osx', 'cygwin', 'win32'],
         author='holger krekel',
         author_email='holger@merlinux.eu',
-        packages=['tox'],
-        entry_points={'console_scripts': 'tox=tox:cmdline\ntox-quickstart=tox._quickstart:main'},
+        packages=['tox_plus'],
+        entry_points={'console_scripts': 'tox-plus=tox_plus:cmdline\ntox-plus-quickstart=tox_plus._quickstart:main'},
         # we use a public tox version to test, see tox.ini's testenv
         # "deps" definition for the required dependencies
-        tests_require=['tox'],
+        tests_require=['tox-plus'],
         cmdclass={"test": Tox},
         install_requires=install_requires,
         extras_require=extras_require,

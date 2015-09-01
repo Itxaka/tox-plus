@@ -2,7 +2,7 @@ import sys
 import py
 import re
 import inspect
-from tox import hookimpl
+from tox_plus import hookimpl
 
 
 class Interpreters:
