@@ -986,7 +986,8 @@ class SectionReader:
         try:
             handler = handlers[sub_type]
         except KeyError:
-            raise tox_plus.exception.ConfigError("No support for the %s substitution type" % sub_type)
+            raise tox_plus.exception.ConfigError("No support for the %s "
+                                                 "substitution type" % sub_type)
 
         return handler(match)
 
