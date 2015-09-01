@@ -1,5 +1,5 @@
 include CHANGELOG
-include README.rst
+include README.md
 include CONTRIBUTORS
 include ISSUES.txt
 include LICENSE 
