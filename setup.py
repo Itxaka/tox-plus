@@ -46,7 +46,7 @@ def main():
     setuptools.setup(
         name='tox-plus',
         description='virtualenv-based automation of test activities',
-        long_description=open("README.rst").read(),
+        long_description=open("README.md").read(),
         url='https://github.com/Itxaka/tox-plus',
         version='0.0.1',
         license='http://opensource.org/licenses/MIT',
