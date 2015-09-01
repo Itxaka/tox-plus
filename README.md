@@ -2,7 +2,8 @@
 What is Tox-plus?
 --------------------
 Tox-plus is a fork of tox done in order to add more features to it.
-[![Build Status](https://travis-ci.org/Itxaka/tox-plus.svg?branch=master)](https://travis-ci.org/Itxaka/tox-plus)
+
+![Build Status](https://travis-ci.org/Itxaka/tox-plus.svg?branch=master)
 
 
 Differences
