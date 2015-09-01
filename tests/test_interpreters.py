@@ -2,8 +2,8 @@ import sys
 import os
 
 import pytest
-from tox.interpreters import *  # noqa
-from tox.config import get_plugin_manager
+from tox_plus.interpreters import *  # noqa
+from tox_plus.config import get_plugin_manager
 
 
 @pytest.fixture

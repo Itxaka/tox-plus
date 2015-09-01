@@ -6,16 +6,17 @@ INI-style "tox.ini" file.
 """
 from __future__ import with_statement
 
-import tox
+import tox_plus
 import py
 import os
 import sys
 import subprocess
-from tox._verlib import NormalizedVersion, IrrationalVersionError
-from tox.venv import VirtualEnv
-from tox.config import parseconfig
-from tox.result import ResultLog
-from tox import hookspecs
+from tox_plus._verlib import NormalizedVersion, IrrationalVersionError
+from tox_plus.venv import VirtualEnv
+from tox_plus.config import parseconfig
+from tox_plus.result import ResultLog
+from tox_plus import hookspecs
+
 from subprocess import STDOUT
 import pluggy
 
@@ -26,9 +27,9 @@ def get_plugin_manager():
     # initialize plugin manager
     pm = pluggy.PluginManager("tox")
     pm.add_hookspecs(hookspecs)
-    pm.register(tox.config)
-    pm.register(tox.interpreters)
-    pm.register(tox.session)
+    pm.register(tox_plus.config)
+    pm.register(tox_plus.interpreters)
+    pm.register(tox_plus.session)
     pm.load_setuptools_entrypoints("tox")
     pm.check_pending()
     return pm
@@ -219,10 +220,10 @@ class Action(object):
                 self.report.error(out)
                 if hasattr(self, "commandlog"):
                     self.commandlog.add_command(popen.args, out, ret)
-                raise tox.exception.InvocationError(
+                raise tox_plus.exception.InvocationError(
                     "%s (see %s)" % (invoked, outpath), ret)
             else:
-                raise tox.exception.InvocationError("%r" % (invoked, ), ret)
+                raise tox_plus.exception.InvocationError("%r" % (invoked, ), ret)
         if not out and outpath:
             out = outpath.read()
         if hasattr(self, "commandlog"):
@@ -386,10 +387,10 @@ class Session:
         return action
 
     def runcommand(self):
-        self.report.using("tox-%s from %s" % (tox.__version__, tox.__file__))
+        self.report.using("tox-%s from %s" % (tox_plus.__version__, tox_plus.__file__))
         if self.config.minversion:
             minversion = NormalizedVersion(self.config.minversion)
-            toxversion = NormalizedVersion(tox.__version__)
+            toxversion = NormalizedVersion(tox_plus.__version__)
             if toxversion < minversion:
                 self.report.error(
                     "tox version is %s, required is at least %s" % (
@@ -415,7 +416,7 @@ class Session:
     def _makesdist(self):
         setup = self.config.setupdir.join("setup.py")
         if not setup.check():
-            raise tox.exception.MissingFile(setup)
+            raise tox_plus.exception.MissingFile(setup)
         action = self.newaction(None, "packaging")
         with action:
             action.setactivity("sdist-make", setup)
@@ -460,7 +461,7 @@ class Session:
             envlog = self.resultlog.get_envlog(venv.name)
             try:
                 status = venv.update(action=action)
-            except tox.exception.InvocationError:
+            except tox_plus.exception.InvocationError:
                 status = sys.exc_info()[1]
             if status:
                 commandlog = envlog.get_commandlog("setup")
@@ -484,7 +485,7 @@ class Session:
             try:
                 venv.developpkg(setupdir, action)
                 return True
-            except tox.exception.InvocationError:
+            except tox_plus.exception.InvocationError:
                 venv.status = sys.exc_info()[1]
                 return False
 
@@ -502,7 +503,7 @@ class Session:
             try:
                 venv.installpkg(path, action)
                 return True
-            except tox.exception.InvocationError:
+            except tox_plus.exception.InvocationError:
                 venv.status = sys.exc_info()[1]
                 return False
 
@@ -522,7 +523,7 @@ class Session:
         else:
             try:
                 path = self._makesdist()
-            except tox.exception.InvocationError:
+            except tox_plus.exception.InvocationError:
                 v = sys.exc_info()[1]
                 self.report.error("FAIL could not package project - v = %r" %
                                   v)
@@ -592,7 +593,7 @@ class Session:
         retcode = 0
         for venv in self.venvlist:
             status = venv.status
-            if isinstance(status, tox.exception.InterpreterNotFound):
+            if isinstance(status, tox_plus.exception.InterpreterNotFound):
                 msg = "  %s: %s" % (venv.envconfig.envname, str(status))
                 if self.config.option.skip_missing_interpreters:
                     self.report.skip(msg)
@@ -641,7 +642,7 @@ class Session:
             self.report.line("%s" % env)
 
     def info_versions(self):
-        versions = ['tox-%s' % tox.__version__]
+        versions = ['tox-%s' % tox_plus.__version__]
         try:
             version = py.process.cmdexec("virtualenv --version")
         except py.process.cmdexec.Error:
@@ -664,11 +665,11 @@ class Session:
         if p.check():
             return p
         if not p.dirpath().check(dir=1):
-            raise tox.exception.MissingDirectory(p.dirpath())
+            raise tox_plus.exception.MissingDirectory(p.dirpath())
         self.report.info("determining %s" % p)
         candidates = p.dirpath().listdir(p.basename)
         if len(candidates) == 0:
-            raise tox.exception.MissingDependency(pkgspec)
+            raise tox_plus.exception.MissingDependency(pkgspec)
         if len(candidates) > 1:
             items = []
             for x in candidates:
@@ -680,7 +681,7 @@ class Session:
                                         str(x))
             items.sort()
             if not items:
-                raise tox.exception.MissingDependency(pkgspec)
+                raise tox_plus.exception.MissingDependency(pkgspec)
             return items[-1][1]
         else:
             return candidates[0]

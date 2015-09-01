@@ -1,6 +1,6 @@
 import py
 import pytest
-import tox
+import tox_plus
 import os
 import sys
 from py.builtin import _isbytes, _istext, print_
@@ -26,7 +26,7 @@ def pytest_addoption(parser):
 
 
 def pytest_report_header():
-    return "tox comes from: %r" % (tox.__file__)
+    return "tox comes from: %r" % (tox_plus.__file__)
 
 
 @pytest.fixture
@@ -134,7 +134,7 @@ class pcallMock:
 
 @pytest.fixture
 def mocksession(request):
-    from tox.session import Session
+    from tox_plus.session import Session
 
     class MockSession(Session):
         def __init__(self):

@@ -1,5 +1,5 @@
 #
-__version__ = '2.1.1'
+__version__ = '0.0.1'
 
 from .hookspecs import hookspec, hookimpl  # noqa
 
@@ -24,4 +24,4 @@ class exception:
     class MissingDependency(Error):
         """ a dependency could not be found or determined. """
 
-from tox.session import main as cmdline  # noqa
+from tox_plus.session import main as cmdline  # noqa

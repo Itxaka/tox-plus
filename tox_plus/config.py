@@ -9,12 +9,13 @@ import string
 import pkg_resources
 import itertools
 import pluggy
-from tox import hookspecs
-import tox.interpreters
+from tox_plus import hookspecs
+import tox_plus.interpreters
+
 
 import py
 
-import tox
+import tox_plus
 
 iswin32 = sys.platform == "win32"
 
@@ -30,9 +31,9 @@ def get_plugin_manager():
     # initialize plugin manager
     pm = pluggy.PluginManager("tox")
     pm.add_hookspecs(hookspecs)
-    pm.register(tox.config)
-    pm.register(tox.interpreters)
-    pm.register(tox.session)
+    pm.register(tox_plus.config)
+    pm.register(tox_plus.interpreters)
+    pm.register(tox_plus.session)
     pm.load_setuptools_entrypoints("tox")
     pm.check_pending()
     return pm
@@ -175,7 +176,7 @@ class InstallcmdOption:
 
     def postprocess(self, testenv_config, value):
         if '{packages}' not in value:
-            raise tox.exception.ConfigError(
+            raise tox_plus.exception.ConfigError(
                 "'install_command' must contain '{packages}' substitution")
         return value
 
@@ -199,7 +200,7 @@ def parseconfig(args=None):
 
     # parse command line options
     option = parser._parse_args(args)
-    interpreters = tox.interpreters.Interpreters(hook=pm.hook)
+    interpreters = tox_plus.interpreters.Interpreters(hook=pm.hook)
     config = Config(pluginmanager=pm, option=option, interpreters=interpreters)
     config._parser = parser
     config._testenv_attr = parser._testenv_attr
@@ -217,7 +218,7 @@ def parseconfig(args=None):
             feedback("toxini file %r not found" % (basename), sysexit=True)
     try:
         parseini(config, inipath)
-    except tox.exception.InterpreterNotFound:
+    except tox_plus.exception.InterpreterNotFound:
         exn = sys.exc_info()[1]
         # Use stdout to match test expectations
         py.builtin.print_("ERROR: " + str(exn))
@@ -236,8 +237,8 @@ def feedback(msg, sysexit=False):
 
 class VersionAction(argparse.Action):
     def __call__(self, argparser, *args, **kwargs):
-        version = tox.__version__
-        py.builtin.print_("%s imported from %s" % (version, tox.__file__))
+        version = tox_plus.__version__
+        py.builtin.print_("%s imported from %s" % (version, tox_plus.__file__))
         raise SystemExit(0)
 
 
@@ -545,16 +546,16 @@ class TestenvConfig:
     def getsupportedinterpreter(self):
         if sys.platform == "win32" and self.basepython and \
                 "jython" in self.basepython:
-            raise tox.exception.UnsupportedInterpreter(
+            raise tox_plus.exception.UnsupportedInterpreter(
                 "Jython/Windows does not support installing scripts")
         info = self.config.interpreters.get_info(envconfig=self)
         if not info.executable:
-            raise tox.exception.InterpreterNotFound(self.basepython)
+            raise tox_plus.exception.InterpreterNotFound(self.basepython)
         if not info.version_info:
-            raise tox.exception.InvocationError(
+            raise tox_plus.exception.InvocationError(
                 'Failed to get version_info for %s: %s' % (info.name, info.err))
         if info.version_info < (2, 6):
-            raise tox.exception.UnsupportedInterpreter(
+            raise tox_plus.exception.UnsupportedInterpreter(
                 "python2.5 is not supported anymore, sorry")
         return info.executable
 
@@ -855,7 +856,7 @@ class SectionReader:
             elif s.lower() == "false":
                 s = False
             else:
-                raise tox.exception.ConfigError(
+                raise tox_plus.exception.ConfigError(
                     "boolean value %r needs to be 'True' or 'False'")
         return s
 
@@ -906,7 +907,7 @@ class SectionReader:
         env_list = self._build_envs_list()
         match_value = match.group('substitution_value')
         if not match_value:
-            raise tox.exception.ConfigError(
+            raise tox_plus.exception.ConfigError(
                 'env: requires an environment variable name')
 
         default = None
@@ -919,7 +920,7 @@ class SectionReader:
 
         if envkey not in os.environ and default is None:
             if envkey not in env_list and default is None:
-                raise tox.exception.ConfigError(
+                raise tox_plus.exception.ConfigError(
                     "substitution env:%r: unknown environment variable %r" %
                     (envkey, envkey))
         if envkey in os.environ:
@@ -950,7 +951,7 @@ class SectionReader:
                 finally:
                     self._subststack.pop()
 
-        raise tox.exception.ConfigError(
+        raise tox_plus.exception.ConfigError(
             "substitution key %r not found" % key)
 
     def _replace_substitution(self, match):
@@ -979,13 +980,14 @@ class SectionReader:
         try:
             sub_type = g['sub_type']
         except KeyError:
-            raise tox.exception.ConfigError(
+            raise tox_plus.exception.ConfigError(
                 "Malformed substitution; no substitution type provided")
 
         try:
             handler = handlers[sub_type]
         except KeyError:
-            raise tox.exception.ConfigError("No support for the %s substitution type" % sub_type)
+            raise tox_plus.exception.ConfigError("No support for the %s "
+                                                 "substitution type" % sub_type)
 
         return handler(match)
 
@@ -1029,7 +1031,7 @@ class _ArgvlistReader:
             current_command = ""
         else:
             if current_command:
-                raise tox.exception.ConfigError(
+                raise tox_plus.exception.ConfigError(
                     "line-continuation ends nowhere while resolving for [%s] %s" %
                     (reader.section_name, "commands"))
         return commands

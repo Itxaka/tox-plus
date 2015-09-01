@@ -4,7 +4,7 @@ import sys
 import re
 import codecs
 import py
-import tox
+import tox_plus
 from .config import DepConfig
 
 
@@ -83,7 +83,7 @@ class VirtualEnv(object):
             return p
         p = py.path.local.sysfind(name)
         if p is None:
-            raise tox.exception.InvocationError(
+            raise tox_plus.exception.InvocationError(
                 "could not find executable %r" % (name,))
         # p is not found in virtualenv script/bin dir
         if venv:
@@ -131,13 +131,13 @@ class VirtualEnv(object):
             action.setactivity("recreate", self.envconfig.envdir)
         try:
             self.create(action)
-        except tox.exception.UnsupportedInterpreter:
+        except tox_plus.exception.UnsupportedInterpreter:
             return sys.exc_info()[1]
-        except tox.exception.InterpreterNotFound:
+        except tox_plus.exception.InterpreterNotFound:
             return sys.exc_info()[1]
         try:
             self.install_deps(action)
-        except tox.exception.InvocationError:
+        except tox_plus.exception.InvocationError:
             v = sys.exc_info()[1]
             return "could not install deps %s; v = %r" % (
                 self.envconfig.deps, v)
@@ -145,7 +145,7 @@ class VirtualEnv(object):
     def _getliveconfig(self):
         python = self.envconfig.python_info.executable
         md5 = getdigest(python)
-        version = tox.__version__
+        version = tox_plus.__version__
         sitepackages = self.envconfig.sitepackages
         develop = self.envconfig.usedevelop
         deps = []
@@ -350,7 +350,7 @@ class VirtualEnv(object):
                 try:
                     self._pcall(argv, cwd=cwd, action=action, redirect=redirect,
                                 ignore_ret=ignore_ret, testcommand=True)
-                except tox.exception.InvocationError as err:
+                except tox_plus.exception.InvocationError as err:
                     self.session.report.error(str(err))
                     self.status = "commands failed"
                     if not self.envconfig.ignore_errors:

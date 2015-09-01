@@ -1,7 +1,7 @@
 import sys
 import py
-from tox.result import ResultLog
-import tox
+from tox_plus.result import ResultLog
+import tox_plus
 import pytest
 
 
@@ -17,7 +17,7 @@ def test_pre_set_header(pkg):
     d = replog.dict
     assert replog.dict == d
     assert replog.dict["reportversion"] == "1"
-    assert replog.dict["toxversion"] == tox.__version__
+    assert replog.dict["toxversion"] == tox_plus.__version__
     assert replog.dict["platform"] == sys.platform
     assert replog.dict["host"] == py.std.socket.getfqdn()
     data = replog.dumps_json()
@@ -31,7 +31,7 @@ def test_set_header(pkg):
     replog.set_header(installpkg=pkg)
     assert replog.dict == d
     assert replog.dict["reportversion"] == "1"
-    assert replog.dict["toxversion"] == tox.__version__
+    assert replog.dict["toxversion"] == tox_plus.__version__
     assert replog.dict["platform"] == sys.platform
     assert replog.dict["host"] == py.std.socket.getfqdn()
     assert replog.dict["installpkg"] == {
