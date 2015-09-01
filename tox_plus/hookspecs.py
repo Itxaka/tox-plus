@@ -30,3 +30,17 @@ def tox_get_python_executable(envconfig):
     per-testenv configuration, notably the ``.envname`` and ``.basepython``
     setting.
     """
+
+
+@hookspec
+def pretest(venv):
+    """ called before the runtests commands are executed
+    ``venv`` is the virtualenv where the test have run
+    """
+
+
+@hookspec
+def posttest(venv):
+    """ called after the runtests commands are executed
+    ``venv`` is the virtualenv where the test have run
+    """

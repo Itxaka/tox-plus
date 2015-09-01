@@ -9,9 +9,9 @@ import string
 import pkg_resources
 import itertools
 import pluggy
-
-import tox_plus.interpreters
 from tox_plus import hookspecs
+import tox_plus.interpreters
+
 
 import py
 
@@ -33,6 +33,7 @@ def get_plugin_manager():
     pm.add_hookspecs(hookspecs)
     pm.register(tox_plus.config)
     pm.register(tox_plus.interpreters)
+    pm.register(tox_plus.session)
     pm.load_setuptools_entrypoints("tox")
     pm.check_pending()
     return pm

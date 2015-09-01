@@ -15,7 +15,38 @@ from tox_plus._verlib import NormalizedVersion, IrrationalVersionError
 from tox_plus.venv import VirtualEnv
 from tox_plus.config import parseconfig
 from tox_plus.result import ResultLog
+from tox_plus import hookspecs
+
 from subprocess import STDOUT
+import pluggy
+
+hookimpl = pluggy.HookimplMarker("tox")
+
+
+def get_plugin_manager():
+    # initialize plugin manager
+    pm = pluggy.PluginManager("tox")
+    pm.add_hookspecs(hookspecs)
+    pm.register(tox_plus.config)
+    pm.register(tox_plus.interpreters)
+    pm.register(tox_plus.session)
+    pm.load_setuptools_entrypoints("tox")
+    pm.check_pending()
+    return pm
+
+
+@hookimpl(tryfirst=True)
+def pretest(venv):
+    action = venv.session.newaction(venv, "pre-test")
+    with action:
+        action.setactivity("pre-test", "Checking for any pre-test activity")
+
+
+@hookimpl(tryfirst=True)
+def posttest(venv):
+    action = venv.session.newaction(venv, "post-test")
+    with action:
+        action.setactivity("post-test", "Checking for any post-test activity")
 
 
 def now():
@@ -542,8 +573,10 @@ class Session:
                     action.setactivity("installed", ",".join(packages))
                     envlog = self.resultlog.get_envlog(venv.name)
                     envlog.set_installed(packages)
-
+                pm = get_plugin_manager()
+                pm.hook.pretest(venv=venv)
                 self.runtestenv(venv)
+                pm.hook.posttest(venv=venv)
         retcode = self._summary()
         return retcode
 
