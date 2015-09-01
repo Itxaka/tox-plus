@@ -51,8 +51,8 @@ def main():
         version='0.0.1',
         license='http://opensource.org/licenses/MIT',
         platforms=['unix', 'linux', 'osx', 'cygwin', 'win32'],
-        author='holger krekel',
-        author_email='holger@merlinux.eu',
+        author='Itxaka serrano, Holger krekel',
+        author_email='itxakaserrano@gmail.com',
         packages=['tox_plus'],
         entry_points={'console_scripts': 'tox-plus=tox_plus:cmdline\ntox-plus-quickstart=tox_plus._quickstart:main'},
         # we use a public tox version to test, see tox.ini's testenv
